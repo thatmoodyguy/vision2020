@@ -46,35 +46,6 @@ def gstreamer_pipeline(
         )
     )
 
-def old_gstreamer_pipeline(
-    capture_width=1280,
-    capture_height=720,
-    display_width=640,
-    display_height=360,
-    framerate=60,
-    flip_method=0,
-):
-
-
-    return (
-         "nvarguscamerasrc wbmode=0 ee-mode=0 aeantibanding=0 aelock=true exposuretimerange=\"5000000 5000000\" ! "
-         "video/x-raw(memory:NVMM), "
-         "width=(int)%d, height=(int)%d, "
-         "format=(string)NV12, framerate=(fraction)%d/1 ! "
-         "nvvidconv flip-method=%d ! "
-        "video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
-         "videoconvert ! "
-         "video/x-raw, format=(string)BGR ! appsink"
-        % (
-            capture_width,
-            capture_height,
-            framerate,
-            flip_method,
-            display_width,
-            display_height
-        )
-    )
-
 def apply_hsv_filter(img, args):
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 	lower = (int(args[0]), int(args[2]), int(args[4]))
@@ -138,11 +109,6 @@ def midpoint(point1, point2):
 	midy = int((point1[1] + point2[1]) / 2.0)
 	return midx, midy
 
-def anti_jitter_center(pt):
-	last_target_coordinates
-
-
-
 def show_camera():
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
     print(gstreamer_pipeline(flip_method=0))
@@ -154,17 +120,15 @@ def show_camera():
             _, original_img = cap.read()
             filter = (60,87,120,255,50,255)
             img = apply_hsv_filter(original_img, filter)
-            ##img = gaussian_blur(img)
-            #img = erode(img, 1)
-            #img = dilate(img, 1)
+            img = erode(img, 1)
+            img = dilate(img, 1)
 
-            #targets = find_contours(img)
-            #brColor = (255,255,255)
-            #for contour in targets:
-            #    rr = cv2.minAreaRect(contour)
-            #    pt = get_goal_center(rr)
-            #    #pt = anti_jitter_center(pt)
-            #    cv2.circle(original_img, pt, 6, brColor, 3)
+            targets = find_contours(img)
+            brColor = (255,255,255)
+            for contour in targets:
+                rr = cv2.minAreaRect(contour)
+                pt = get_goal_center(rr)
+                cv2.circle(original_img, pt, 6, brColor, 3)
 
             cv2.imshow("CSI Camera", original_img)
             # This also acts as
