@@ -11,6 +11,7 @@ import math
 from FPS import FPS
 from WebcamVideoStream import WebcamVideoStream
 import imutils
+import time
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
 # Defaults to 1280x720 @ 60fps
@@ -112,18 +113,26 @@ def midpoint(point1, point2):
 	midy = int((point1[1] + point2[1]) / 2.0)
 	return midx, midy
 
+def save_snapshot(frame, frametype):
+    filename = "snapshots/snapshot-{}-{}.jpg".format(time.strftime("%Y%m%d-%H%M%S"), frametype)
+    cv2.imwrite(filename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+
 def show_camera():
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
     print(gstreamer_pipeline(flip_method=0))
     vs = WebcamVideoStream(src=gstreamer_pipeline()).start()
     #cap = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
     fps = FPS().start()
+    take_snapshot = True
 
     while True:
         window_handle = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
         # Window
         while cv2.getWindowProperty("CSI Camera", 0) >= 0:
             original_img = vs.read()
+            if take_snapshot:
+                save_snapshot(original_img, "original")
+                take_snapshot = False
             filter = (60,87,120,255,50,255)
             img = apply_hsv_filter(original_img, filter)
             img = erode(img, 1)
