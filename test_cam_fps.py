@@ -126,7 +126,7 @@ def show_camera():
     take_snapshot = True
 
     while True:
-        window_handle = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
+        _ = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
         # Window
         while cv2.getWindowProperty("CSI Camera", 0) >= 0:
             original_img = vs.read()
