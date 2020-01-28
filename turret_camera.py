@@ -43,7 +43,7 @@ class TurretCamera():
             print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
             cv2.destroyAllWindows()
 
-    def keep_running():
+    def keep_running(self):
         if self.interactive():
             cv2.getWindowProperty("CSI Camera", 0) >= 0
         else:
