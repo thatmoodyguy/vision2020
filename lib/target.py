@@ -15,7 +15,7 @@ class Target():
         if contours.count == 0:
             self.acquired = False
             return
-        return contours.sort(reverse=True,key=contour_sort)[0]
+        return contours[0]
         
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
