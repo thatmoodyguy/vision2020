@@ -12,7 +12,7 @@ class Target():
     def acquire_target(self):
         print("starting target acquisition")
         contours = self.find_potential_targets(self.image)
-        if contours.count == 0:
+        if len(contours) == 0:
             self.acquired = False
             return
         return contours[0]
