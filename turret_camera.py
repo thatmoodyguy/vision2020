@@ -44,7 +44,7 @@ class TurretCamera():
             cv2.destroyAllWindows()
 
     def keep_running(self):
-        if self.interactive():
+        if self.interactive:
             cv2.getWindowProperty("CSI Camera", 0) >= 0
         else:
             True
