@@ -8,6 +8,15 @@ class StreamFactory:
         return WebcamVideoStream(src=cls.gstreamer_pipeline(flip_method=0)).start()
 
     @classmethod
+    def output_stream(cls):
+      framerate = 30
+      return cv2.VideoWriter('appsrc ! videoconvert ! '
+                      'x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! '
+                      'rtph264pay config-interval=1 pt=96 !'
+                      'udpsink host=127.0.0.1 port=1234'
+                      0, framerate, (1280, 720))
+    
+    @classmethod
     def gstreamer_pipeline(cls,
         capture_width=1280,
         capture_height=720,
