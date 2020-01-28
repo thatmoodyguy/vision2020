@@ -8,14 +8,17 @@ class Target():
         self.image = image
         self.annotated_image = image
         self.acquired = False
+        self.contour = None
 
     def acquire_target(self):
         print("starting target acquisition")
         contours = self.find_potential_targets(self.image)
         if len(contours) == 0:
             self.acquired = False
-            return
-        return contours[0]
+            self.contour = None
+        else:
+            self.acquired = True
+            self.contour = contours[0]
         
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)

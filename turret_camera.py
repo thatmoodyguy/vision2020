@@ -71,7 +71,8 @@ class TurretCamera():
 		img = filters.erode(img, 1)
 		img = filters.dilate(img, 1)
 
-		target = Target(img).acquire_target()
+		target = Target(img)
+		target.acquire_target()
 		print('target acquisition completed')
 		if target.acquired == False:
 			self.comms.send_no_target_message()
