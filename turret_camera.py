@@ -44,6 +44,8 @@ class TurretCamera():
 						break
 			if self.interactive:
 				fps.stop()
+				print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+				print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 		except:
 			print("ERROR: {}".format(sys.exc_info()[0]))
 		finally:
@@ -51,8 +53,6 @@ class TurretCamera():
 			#output_stream.release()
 
 		if self.interactive:
-			print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-			print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 			cv2.destroyAllWindows()
 
 	def keep_running(self):
