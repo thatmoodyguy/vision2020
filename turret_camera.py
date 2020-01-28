@@ -50,6 +50,7 @@ class TurretCamera():
             True
 
     def read_and_process_image(self, stream):
+        print("reading from stream...")
         original_img = stream.read()
 
         filter = (60,87,120,255,50,255)
