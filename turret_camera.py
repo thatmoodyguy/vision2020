@@ -65,11 +65,11 @@ class TurretCamera():
         img = filters.dilate(img, 1)
 
         target = Target(img).acquire_target()
-
+        print('target acquisition completed')
         if target.acquired == False:
-            self.comms.send_no_target_message()
+            #self.comms.send_no_target_message()
         else:
-            self.comms.send_target_info_message(target)
+            #self.comms.send_target_info_message(target)
 
         return target.annotated_image
 
