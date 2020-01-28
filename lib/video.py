@@ -49,7 +49,7 @@ class WebcamVideoStream:
 	def __init__(self, src=0):
 		# initialize the video camera stream and read the first frame
 		# from the stream
-		self.stream = cv2.VideoCapture(src)
+		self.stream = cv2.VideoCapture(src, cv2.CAP_V4L)
 		time.sleep(1)
 		(self.grabbed, self.frame) = self.stream.read()
 
