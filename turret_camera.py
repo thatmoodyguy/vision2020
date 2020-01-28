@@ -1,5 +1,6 @@
 import sys
 import cv2
+import traceback
 import numpy as np
 from lib.video import StreamFactory, WebcamVideoStream, FPS
 from lib import filters
@@ -47,7 +48,7 @@ class TurretCamera():
 				print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
 				print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 		except:
-			print("ERROR: {}".format(sys.exc_info()[0]))
+			print(traceback.format_exc())
 		finally:
 			input_stream.release()
 			#output_stream.release()
