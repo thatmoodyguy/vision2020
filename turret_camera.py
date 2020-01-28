@@ -14,11 +14,17 @@ class TurretCamera():
         self.camera_fov_degrees_y = 55.4
         self.flip_camera_mode = 0
         self.interactive = interactive_mode
+        if self.interactive:
+            print("INTERACTIVE MODE!!!!!")
+        else:
+            print("RUNNING IN HEADLESS MODE!!!!!")
         self.comms = Comms()
 
     def run(self):
         #output_stream = StreamFactory.output_stream()
+        print("starting the stream...")
         input_stream = StreamFactory.get_stream().start()
+        print('stream started')
         if self.interactive:
             window = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
             fps = FPS().start()
