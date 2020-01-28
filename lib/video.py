@@ -60,6 +60,10 @@ class WebcamVideoStream:
 	  Thread(target=self.update, args=()).start()
 	  return self
 
+  def release(self):
+    if not self.stream is None:
+      self.stream.release()
+
 	def update(self):
 	  # keep looping infinitely until the thread is stopped
 	  while True:
