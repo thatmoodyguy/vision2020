@@ -9,7 +9,7 @@ class Target():
         self.annotated_image = image
         self.acquired = False
 
-    def self.acquire_target(self):
+    def acquire_target(self):
         contours = find_potential_targets(self.image)
         if contours.count == 0:
             self.acquired = False
