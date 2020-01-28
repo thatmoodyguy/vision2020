@@ -23,7 +23,7 @@ class TurretCamera():
 		self.comms = Comms()
 
 	def run(self):
-		#output_stream = StreamFactory.output_stream()
+		output_stream = StreamFactory.output_stream()
 		print("starting the stream...")
 		input_stream = StreamFactory.get_stream().start()
 		print('stream started')
@@ -35,7 +35,7 @@ class TurretCamera():
 				fps.start()
 			while self.keep_running():
 				frame = self.read_and_process_image(input_stream)
-				#output_stream.write(frame)
+				output_stream.write(frame)
 				if self.interactive:
 					cv2.imshow("CSI Camera", frame)
 					# Check for keyboard interaction
@@ -51,7 +51,7 @@ class TurretCamera():
 			print(traceback.format_exc())
 		finally:
 			input_stream.release()
-			#output_stream.release()
+			output_stream.release()
 
 		if self.interactive:
 			cv2.destroyAllWindows()
@@ -63,7 +63,6 @@ class TurretCamera():
 			return True
 
 	def read_and_process_image(self, stream):
-		print("reading from stream...")
 		original_img = stream.read()
 
 		filter = (60,87,120,255,50,255)
@@ -73,7 +72,6 @@ class TurretCamera():
 
 		target = Target(img, original_img)
 		target.acquire_target()
-		print('target acquisition completed')
 		if target.acquired == False:
 			self.comms.send_no_target_message()
 		else:
