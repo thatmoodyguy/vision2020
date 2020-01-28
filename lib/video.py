@@ -50,7 +50,7 @@ class WebcamVideoStream:
 		# initialize the video camera stream and read the first frame
 		# from the stream
 		self.stream = cv2.VideoCapture(src)
-                time.sleep(1)
+		time.sleep(1)
 		(self.grabbed, self.frame) = self.stream.read()
 
 		# initialize the variable used to indicate if the thread should
