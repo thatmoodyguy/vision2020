@@ -25,24 +25,28 @@ class TurretCamera():
 		print("starting the stream...")
 		input_stream = StreamFactory.get_stream().start()
 		print('stream started')
-		if self.interactive:
-			window = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
-			fps = FPS().start()
-		while self.keep_running():
-			frame = self.read_and_process_image(input_stream)
-			#output_stream.write(frame)
+		fps = FPS()
+		try:
 			if self.interactive:
-				cv2.imshow("CSI Camera", frame)
-				# Check for keyboard interaction
-				keyCode = cv2.waitKey(30) & 0xFF
-				# Stop the program on the ESC key
-				if keyCode == 27:
-					break
-		if self.interactive:
-			fps.stop()
-
-		input_stream.release()
-		#output_stream.release()
+				window = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
+				fps.start()
+			while self.keep_running():
+				frame = self.read_and_process_image(input_stream)
+				#output_stream.write(frame)
+				if self.interactive:
+					cv2.imshow("CSI Camera", frame)
+					# Check for keyboard interaction
+					keyCode = cv2.waitKey(30) & 0xFF
+					# Stop the program on the ESC key
+					if keyCode == 27:
+						break
+			if self.interactive:
+				fps.stop()
+		except:
+			print("ERROR: {}".format(sys.exc_info()[0]))
+		finally:
+			input_stream.release()
+			#output_stream.release()
 
 		if self.interactive:
 			print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
