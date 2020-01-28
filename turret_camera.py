@@ -27,6 +27,7 @@ class TurretCamera():
 		print('stream started')
 		fps = FPS()
 		try:
+			print("entering try block")
 			if self.interactive:
 				window = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
 				fps.start()
@@ -55,9 +56,9 @@ class TurretCamera():
 
 	def keep_running(self):
 		if self.interactive:
-			cv2.getWindowProperty("CSI Camera", 0) >= 0
+			return cv2.getWindowProperty("CSI Camera", 0) >= 0
 		else:
-			True
+			return True
 
 	def read_and_process_image(self, stream):
 		print("reading from stream...")
