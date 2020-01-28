@@ -13,7 +13,7 @@ class StreamFactory:
       framerate = 30
       return cv2.VideoWriter('appsrc ! videoconvert ! '
                       'x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! '
-                      'rtph264pay config-interval=1 pt=96 !'
+                      'rtph264pay config-interval=1 pt=96 ! '
                       'udpsink host=10.45.13.118 port=5000',
                       0, framerate, (1280, 720))
     
@@ -47,11 +47,12 @@ class StreamFactory:
 
 class WebcamVideoStream:
 	def __init__(self, src=0):
-		# initialize the video camera stream and read the first frame
+		print(src)
+                # initialize the video camera stream and read the first frame
 		# from the stream
-		self.stream = cv2.VideoCapture(src, cv2.CAP_V4L)
-		time.sleep(1)
-		(self.grabbed, self.frame) = self.stream.read()
+		self.stream = cv2.VideoCapture(src, cv2.CAP_GSTREAMER)
+                if self.stream.isOpened():
+                    (self.grabbed, self.frame) = self.stream.read()
 
 		# initialize the variable used to indicate if the thread should
 		# be stopped

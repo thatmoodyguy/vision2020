@@ -20,8 +20,8 @@ last_target_coordinates = []
 def gstreamer_pipeline(
     capture_width=1280,
     capture_height=720,
-    display_width=1280,
-    display_height=720,
+    display_width=640,
+    display_height=320,
     framerate=30,
     flip_method=0,
 ):
@@ -129,7 +129,7 @@ def show_camera():
                 rr = cv2.minAreaRect(contour)
                 pt = get_goal_center(rr)
                 cv2.circle(original_img, pt, 6, brColor, 3)
-
+                print("found a contour! {}".format(pt))
             cv2.imshow("CSI Camera", original_img)
             # This also acts as
             keyCode = cv2.waitKey(30) & 0xFF

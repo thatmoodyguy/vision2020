@@ -17,14 +17,14 @@ class TurretCamera():
         self.comms = Comms()
 
     def run(self):
-        output_stream = StreamFactory.output_stream()
+        #output_stream = StreamFactory.output_stream()
         input_stream = StreamFactory.get_stream().start()
         if self.interactive:
             _ = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
             fps = FPS().start()
         while self.keep_running():
             frame = self.read_and_process_image(input_stream)
-            output_stream.write(frame)
+            #output_stream.write(frame)
             if self.interactive:
                 cv2.imshow("CSI Camera", frame)
                 # Check for keyboard interaction
@@ -36,7 +36,7 @@ class TurretCamera():
             fps.stop()
 
         input_stream.release()
-        output_stream.release()
+        #output_stream.release()
 
         if self.interactive:
             print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
