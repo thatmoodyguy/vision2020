@@ -48,11 +48,11 @@ class StreamFactory:
 class WebcamVideoStream:
 	def __init__(self, src=0):
 		print(src)
-    # initialize the video camera stream and read the first frame
-    # from the stream
+		# initialize the video camera stream and read the first frame
+		# from the stream
 		self.stream = cv2.VideoCapture(src, cv2.CAP_GSTREAMER)
-    if self.stream.isOpened():
-      (self.grabbed, self.frame) = self.stream.read()
+		if self.stream.isOpened():
+			(self.grabbed, self.frame) = self.stream.read()
 
 		# initialize the variable used to indicate if the thread should
 		# be stopped
