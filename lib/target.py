@@ -4,9 +4,10 @@ def contour_sort(e):
     return cv2.contourArea(e)
 
 class Target():
-    def __init__(self, image):
+    def __init__(self, image, original_image):
         self.image = image
-        self.annotated_image = image
+        self.original_image = original_image
+        self.annotated_image = original_image
         self.acquired = False
         self.contour = None
 
@@ -19,6 +20,8 @@ class Target():
         else:
             self.acquired = True
             self.contour = contours[0]
+            #TODO:  calculate and send stats
+            #TODO:  annotate the image with target markings!
         
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
