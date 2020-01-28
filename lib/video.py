@@ -1,6 +1,7 @@
 from threading import Thread
 import cv2
 import datetime
+import time
 
 class StreamFactory:
     @classmethod
@@ -13,7 +14,7 @@ class StreamFactory:
       return cv2.VideoWriter('appsrc ! videoconvert ! '
                       'x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! '
                       'rtph264pay config-interval=1 pt=96 !'
-                      'udpsink host=127.0.0.1 port=1234',
+                      'udpsink host=10.45.13.118 port=5000',
                       0, framerate, (1280, 720))
     
     @classmethod
@@ -22,7 +23,7 @@ class StreamFactory:
         capture_height=720,
         display_width=1280,
         display_height=720,
-        framerate=30,
+        framerate=60,
         flip_method=0,
     ):
         return (
@@ -49,6 +50,7 @@ class WebcamVideoStream:
 		# initialize the video camera stream and read the first frame
 		# from the stream
 		self.stream = cv2.VideoCapture(src)
+                time.sleep(1)
 		(self.grabbed, self.frame) = self.stream.read()
 
 		# initialize the variable used to indicate if the thread should
