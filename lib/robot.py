@@ -1,6 +1,6 @@
-from lib.turret_camera import TurretCamera
-from lib.udp import UdpCommandListener
-from lib.udp import UdpSender
+from turret_camera import TurretCamera
+from udp import UdpCommandListener
+from udp import UdpSender
 import subprocess
 import threading
 
