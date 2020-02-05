@@ -64,3 +64,28 @@ class Target():
         midx = int((point1[0] + point2[0]) / 2.0)
         midy = int((point1[1] + point2[1]) / 2.0)
         return midx, midy
+
+    def bearing(self):
+        target_x = self.target_coordinates[0]
+        center_x = self.image_width / 2.0
+        if target_x == center_x:
+            return 0.0
+        pixels_off = abs(center_x - target_x)
+        heading_abs = self.turret_camera.camera_fov_degrees_x * float(pixels_off) / self.image_width
+        if target_x < center_x:
+            return heading_abs * -1.0
+        else:
+            return heading_abs
+
+    def range(self):
+        target_y = self.target_coordinates[1]
+        center_y = self.image_height / 2.0
+        offset_in_pixels = center_y - target_y
+        print("vertical pixel offset: {}".format(offset_in_pixels))
+        vertical_angle = (offset_in_pixels * self.turret_camera.camera_fov_degrees_y) / self.image_height
+        print("vertical angle: {}".format(vertical_angle))
+        outer_goal_center_height_inches = 98.25
+        camera_height = 24.125
+        vertical_offset_inches = abs(outer_goal_center_height_inches - camera_height)
+        distance = abs(vertical_offset_inches / (math.tan(math.radians(vertical_angle))))
+        return distance
