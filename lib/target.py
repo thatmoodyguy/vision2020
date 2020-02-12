@@ -1,18 +1,25 @@
 import cv2
+import math
 
 def contour_sort(e):
     return cv2.contourArea(e)
 
 class Target():
-    def __init__(self, image, original_image):
+    def __init__(self, robot, image, original_image):
         self.image = image
         self.original_image = original_image
         self.annotated_image = original_image
         self.acquired = False
         self.contour = None
+        self.bearing_x = 0.0
+        self.bearing_y = 0.0
+        self.base_range = 0.0
+        self.goal_slope = 0.0
+        self.robot = robot
+        self.image_width = 1280  #TODO:  Don't hardcode
+        self.image_height = 720  #TODO:  Don't hardcode 
 
     def acquire_target(self):
-        print("starting target acquisition")
         contours = self.find_potential_targets(self.image)
         if len(contours) == 0:
             self.acquired = False
@@ -20,7 +27,17 @@ class Target():
         else:
             self.acquired = True
             self.contour = contours[0]
-            #TODO:  calculate and send stats
+            top_points = self.calc_goal_top_points(self.contour)
+            self.target_coordinates = self.calc_goal_center(top_points)
+            self.bearing_x = self.calc_bearing_x()
+            self.bearing_y = self.calc_bearing_y()
+            self.goal_slope = self.calc_goal_slope(top_points)
+            self.base_range = self.calc_base_range(self.bearing_y)
+
+            cv2.circle(self.annotated_image, self.target_coordinates, 6, (255,255,0), 3)
+            y = int(self.image_height / 2)
+            cv2.line(self.annotated_image, (0,y), (self.image_width,y), (255,255,255), 2)
+
             #TODO:  annotate the image with target markings!
         
     def find_potential_targets(self, img):
@@ -48,44 +65,58 @@ class Target():
     def center_of_vision_target(self,contour):
         rr = cv2.boundingRect(contour)
 
-    def get_goal_center(self,contour):
+    def calc_goal_top_points(self, contour):
         box = cv2.boxPoints(cv2.minAreaRect(contour))
         if self.distance_between(box[1], box[2]) > self.distance_between(box[2], box[3]):
-            return midpoint(box[1], box[2])
+            return [box[1], box[2]]
         else:
-            return midpoint(box[2], box[3])
+            return [box[2], box[3]]
+    
+    def calc_goal_center(self,top_points):
+        return self.midpoint(top_points)
+
+    def calc_goal_slope(self, points):
+        dx = points[1][0] - points[0][0]
+        dy = points[1][1] - points[0][1]
+        return (dy / dx)
 
     def distance_between(self, point1, point2):
         dx = abs(point1[0] - point2[0])
         dy = abs(point1[1] - point2[1])
         return math.sqrt((dx**2) + (dy**2))
 
-    def midpoint(self, point1, point2):
+    def midpoint(self, points):
+        point1, point2 = points
         midx = int((point1[0] + point2[0]) / 2.0)
         midy = int((point1[1] + point2[1]) / 2.0)
         return midx, midy
 
-    def bearing(self):
+    def calc_bearing_x(self):
         target_x = self.target_coordinates[0]
         center_x = self.image_width / 2.0
         if target_x == center_x:
             return 0.0
         pixels_off = abs(center_x - target_x)
-        heading_abs = self.turret_camera.camera_fov_degrees_x * float(pixels_off) / self.image_width
+        heading_abs = self.robot.turret_camera.camera_fov_degrees_x * float(pixels_off) / self.image_width
         if target_x < center_x:
             return heading_abs * -1.0
         else:
             return heading_abs
 
-    def range(self):
+    def calc_bearing_y(self):
         target_y = self.target_coordinates[1]
         center_y = self.image_height / 2.0
         offset_in_pixels = center_y - target_y
-        print("vertical pixel offset: {}".format(offset_in_pixels))
-        vertical_angle = (offset_in_pixels * self.turret_camera.camera_fov_degrees_y) / self.image_height
-        print("vertical angle: {}".format(vertical_angle))
+        angle = (offset_in_pixels * self.robot.turret_camera.camera_fov_degrees_y) / self.image_height
+        return angle - self.robot.turret_camera.camera_vertical_pitch
+
+    def calc_base_range(self, y_bearing):
         outer_goal_center_height_inches = 98.25
-        camera_height = 24.125
+        camera_height = self.robot.turret_camera.camera_height
         vertical_offset_inches = abs(outer_goal_center_height_inches - camera_height)
-        distance = abs(vertical_offset_inches / (math.tan(math.radians(vertical_angle))))
-        return distance
+        if self.bearing_y == 0.0:
+            #TODO: Figure this out!
+            return 0.0
+        else:
+            distance = abs(vertical_offset_inches / (math.tan(math.radians(self.bearing_y))))
+            return distance

@@ -8,8 +8,6 @@
 import cv2
 import numpy as np
 import math
-from FPS import FPS
-from WebcamVideoStream import WebcamVideoStream
 import time
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
@@ -73,10 +71,6 @@ def show_camera():
                 print("Snapshot taken at {}".format(time.strftime("%H%M%S")))
             if keyCode == 27:
                 break
-
-        fps.stop()
-        print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-        print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
         cap.release()
         cv2.destroyAllWindows()

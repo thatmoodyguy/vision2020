@@ -9,18 +9,19 @@ from lib.target import Target
 
 class TurretCamera():
 
-	def __init__(self, interactive_mode = False):
-		self.camera_height = 20.0
-		self.camera_vertical_pitch = 0.0
+	def __init__(self, robot):
+		self.robot = robot
+		self.camera_height = 28.25
+		self.camera_vertical_pitch = 25.0
 		self.camera_fov_degrees_x = 96.1
 		self.camera_fov_degrees_y = 55.4
 		self.flip_camera_mode = 0
-		self.interactive = interactive_mode
+		self.interactive = self.robot.interactive_mode
 		if self.interactive:
 			print("INTERACTIVE MODE!!!!!")
 		else:
 			print("RUNNING IN HEADLESS MODE!!!!!")
-		self.comms = Comms()
+		self.comms = self.robot.comms
 
 	def run(self):
 		output_stream = StreamFactory.output_stream()
@@ -70,7 +71,7 @@ class TurretCamera():
 		img = filters.erode(img, 1)
 		img = filters.dilate(img, 1)
 
-		target = Target(img, original_img)
+		target = Target(self.robot, img, original_img)
 		target.acquire_target()
 		if target.acquired == False:
 			self.comms.send_no_target_message()
