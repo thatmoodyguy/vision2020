@@ -42,10 +42,19 @@ print("calibrating...")
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None, None)
 h,w = first_match.shape[:2]
 newmtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist,(w,h),0,(w,h))
+print("Calibration values:")
+print("mtx: {}".format(mtx))
+print("dist: {}".format(dist))
+print("rvecs: {}".format(rvecs))
+print("tvecs: {}".format(tvecs))
+print("newmtx: {}".format(newmtx))
+print("roi: {}".format(roi))
+
 mapx, mapy = cv2.initUndistortRectifyMap(mtx, dist, None, newmtx, (w,h), 5)
 dst = cv2.remap(first_match, mapx, mapy, cv2.INTER_LINEAR)
 #x,y,w,h = roi
 #dst = dst[y:y+h, x:x+w]
+
 cv2.imshow('img', dst)
 while True:
     cv2.waitKey(500)
