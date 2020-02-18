@@ -48,8 +48,13 @@ def gstreamer_pipeline(
     )
 
 def save_snapshot(frame, cat):
-    filename = "snapshots/{}-{}.jpg".format(cat, time.strftime("%Y%m%d-%H%M%S"))
+    angle = input("input the angle (or q to quit):")
+    if angle == "q":
+        return false
+    distance = input("input distance in inches:")
+    filename = "snapshots/{}-{}-{}-{}.jpg".format(cat, angle, distance, time.strftime("%Y%m%d-%H%M%S"))
     cv2.imwrite(filename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+    return true
 
 def show_camera():
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
@@ -65,10 +70,12 @@ def show_camera():
             cv2.imshow("CSI Camera", original_img)
             # This also acts as
             keyCode = cv2.waitKey(30) & 0xFF
-            # Stop the program on the ESC key
+            # Stop the program on the ESC key, take snapshot on space bar
             if keyCode == 32:
-                save_snapshot(original_img, "snapshot")
-                print("Snapshot taken at {}".format(time.strftime("%H%M%S")))
+                if save_snapshot(original_img, "measure"):
+                    print("Snapshot taken at {}".format(time.strftime("%H%M%S")))
+                else:
+                    break
             if keyCode == 27:
                 break
 
