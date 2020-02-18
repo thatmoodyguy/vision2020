@@ -52,7 +52,7 @@ def save_snapshot(frame, cat):
     if angle == "q":
         return false
     distance = input("input distance in inches:")
-    filename = "snapshots/{}-{}-{}-{}.jpg".format(cat, angle, distance, time.strftime("%Y%m%d-%H%M%S"))
+    filename = "snapshots/{}_{}_{}_{}.jpg".format(cat, angle, distance, time.strftime("%Y%m%d-%H%M%S"))
     cv2.imwrite(filename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
     return true
 
