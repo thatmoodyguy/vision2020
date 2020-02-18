@@ -107,8 +107,8 @@ class Target():
         target_y = self.target_coordinates[1]
         center_y = self.image_height / 2.0
         offset_in_pixels = center_y - target_y
-        angle = (offset_in_pixels * self.robot.turret_camera.camera_fov_degrees_y) / self.image_height
-        return angle - self.robot.turret_camera.camera_vertical_pitch
+        angle = (float(offset_in_pixels) * self.robot.turret_camera.camera_fov_degrees_y) / self.image_height
+        return angle + self.robot.turret_camera.camera_vertical_pitch
 
     def calc_base_range(self, y_bearing):
         outer_goal_center_height_inches = 98.25
