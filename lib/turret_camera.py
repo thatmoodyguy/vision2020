@@ -12,32 +12,28 @@ class TurretCamera():
 
 	def __init__(self, robot):
 		self.robot = robot
-		self.camera_height = 28.25
-		self.camera_vertical_pitch = 25.0
-		self.camera_fov_degrees_x = 96.1
-		self.camera_fov_degrees_y = 55.4
-		self.calibration_matrix = np.array([[766.03930116, 0.0,637.20361122],
- 											[0.0, 764.7621599, 410.02183367],
- 											[0.0, 0.0, 1.0]])
-		self.calibration_distortion = np.array([-0.3502228, 0.16896179, -0.00040508, -0.00060941, -0.04960559])
-		self.ideal_matrix = np.array([[765.44085693, 0.0, 636.70582847],
- 										[0.0, 743.22351074, 398.47404206],
-										[0.0, 0.0, 1.0]])
+		self.camera_height = robot.settings["robot"]["turret_camera_height"]
+		self.camera_vertical_pitch = robot.settings["robot"]["turret_camera_vertical_pitch"]
+		self.camera_fov_degrees_x = robot.settings["cameras"]["turret"]["fov_degrees_x"]
+		self.camera_fov_degrees_y = robot.settings["cameras"]["turret"]["fov_degrees_y"]
 		self.flip_camera_mode = 0
+		self.comms = self.robot.comms
+		self.width = robot.settings["cameras"]["turret"]["input_width"]
+		self.height = robot.settings["cameras"]["turret"]["input_height"]
+		self.fps = robot.settings["cameras"]["turret"]["input_fps"]
+		self.output_width = robot.settings["cameras"]["turret"]["output_width"]
+		self.output_height = robot.settings["cameras"]["turret"]["output_height"]
+		self.output_fps = robot.settings["cameras"]["turret"]["output_fps"]
 		self.interactive = self.robot.interactive_mode
 		if self.interactive:
 			print("INTERACTIVE MODE!!!!!")
 		else:
 			print("RUNNING IN HEADLESS MODE!!!!!")
-		self.comms = self.robot.comms
-		mapx, mapy = self.calculate_dedistortion_map()
-		self.dedistortion_map_x = mapx
-		self.dedistortion_map_y = mapy
 
 	def run(self):
-		output_stream = StreamFactory.output_stream()
+		output_stream = StreamFactory.output_stream(self)
 		print("starting the stream...")
-		input_stream = StreamFactory.get_stream().start()
+		input_stream = StreamFactory.get_stream(self).start()
 		print('stream started')
 		fps = FPS()
 		try:
@@ -74,13 +70,6 @@ class TurretCamera():
 		else:
 			return True
 
-	def calculate_dedistortion_map(self):
-		return cv2.initUndistortRectifyMap(self.calibration_matrix, 
-											self.calibration_distortion, 
-											None, 
-											self.ideal_matrix, 
-											(1280,720), 5)
-
 	def read_and_process_image(self, stream):
 		start_time = time.time()
 		original_img = stream.read()
@@ -99,6 +88,4 @@ class TurretCamera():
 		#target.annotated_image = cv2.resize(target.annotated_image, (640,360))
 		return target.annotated_image
 
-if __name__ == "__main__":
-	TurretCamera(True).run()
 

@@ -1,26 +1,41 @@
+import os
+import sys
+import subprocess
+import threading
+import yaml
 from lib.turret_camera import TurretCamera
 from lib.udp import UdpCommandListener
 from lib.udp import UdpSender
 from lib.comms import Comms
-import subprocess
-import threading
+
+
 
 class Robot():
 	def __init__(self,interactive_mode=False):
 		self.turret_camera = None
 		self.udp_listener_thread = None
 		self.udp_inbound_command_port = 5800
-		self.udp_outbound_host = "10.45.13.2"
-		self.udp_outbount_port = 5801
+		self.udp_outbound_data_host = "10.45.13.2"
+		self.udp_outbound_data_port = 5801
+		self.udp_outbound_video_host = "127.0.0.1"
+		self.udp_outbound_video_port = 5802
 		self.udp_sender = None
 		self.take_snapshot_now = False
 		self.interactive_mode = interactive_mode
+		self.settings = None
 	
 	def start(self):
 		self.comms = Comms(self)
-		self.init_udp_thread();
+		self.load_settings()
+		self.init_udp_thread()
 		self.turret_camera = TurretCamera(self)
 		self.turret_camera.run()
+
+	def load_settings(self):
+		with open(os.path.join(sys.path[0], "config.yml"), "r") as ymlfile:
+			self.settings = yaml.safe_load(ymlfile)
+		
+
 
 	def init_udp_thread(self):
 		if self.udp_listener_thread is None:

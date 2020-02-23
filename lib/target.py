@@ -16,8 +16,8 @@ class Target():
         self.base_range = 0.0
         self.goal_slope = 0.0
         self.robot = robot
-        self.image_width = 1280  #TODO:  Don't hardcode
-        self.image_height = 720  #TODO:  Don't hardcode 
+        self.image_width = robot.turret_camera.width
+        self.image_height = robot.turret_camera.height
 
     def acquire_target(self):
         contours = self.find_potential_targets(self.image)

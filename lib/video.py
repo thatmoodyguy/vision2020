@@ -5,26 +5,26 @@ import time
 
 class StreamFactory:
 		@classmethod
-		def get_stream(cls, flip_method=0):
-			gstream = cls.gstreamer_pipeline(flip_method=0)
+		def get_stream(cls, camera, flip_method=0):
+			gstream = cls.gstreamer_pipeline(flip_method=0, width=camera.width, height=camera.height, framerate=camera.fps)
 			print("Input Stream: {}".format(gstream))
 			return WebcamVideoStream(src=gstream)
 
 		@classmethod
-		def output_stream(cls):
-			framerate = 30
+		def output_stream(cls, camera):
+			framerate = camera.output_fps
+			host = camera.robot.udp_outbound_video_host
+			port = camera.robot.udp_outbound_video_port
 			return cv2.VideoWriter('appsrc ! videoconvert ! '
 											'x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! '
 											'rtph264pay config-interval=1 pt=96 ! '
-											'udpsink host=127.0.0.1 port=5000',
-											0, framerate, (1280, 720))
+											'udpsink host={} port={}'.format(host, port),
+											0, framerate, (camera.output_width, camera.output_height))
 		
 		@classmethod
 		def gstreamer_pipeline(cls,
-				capture_width=1280,
-				capture_height=720,
-				display_width=1280,
-				display_height=720,
+				width=1280,
+				height=720,
 				framerate=30,
 				flip_method=0,
 		):
@@ -38,12 +38,12 @@ class StreamFactory:
 						"videoconvert ! "
 						"video/x-raw, format=(string)BGR ! appsink"
 						% (
-								capture_width,
-								capture_height,
+								width,
+								height,
 								framerate,
 								flip_method,
-								display_width,
-								display_height
+								width,
+								height
 						)
 				)
 
