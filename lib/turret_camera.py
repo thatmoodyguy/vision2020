@@ -85,7 +85,8 @@ class TurretCamera():
 			self.comms.send_no_target_message(start_time)
 		else:
 			self.comms.send_target_info_message(target, start_time)
-		#target.annotated_image = cv2.resize(target.annotated_image, (640,360))
+		if self.width != self.output_width or self.height != self.output_height:
+			target.annotated_image = cv2.resize(target.annotated_image, (self.output_width, self.output_height))
 		return target.annotated_image
 
 
