@@ -50,11 +50,11 @@ def gstreamer_pipeline(
 def save_snapshot(frame, cat):
     angle = input("input the angle (or q to quit):")
     if angle == "q":
-        return false
+        return False
     distance = input("input distance in inches:")
     filename = "snapshots/{}_{}_{}_{}.jpg".format(cat, angle, distance, time.strftime("%Y%m%d-%H%M%S"))
     cv2.imwrite(filename, frame, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
-    return true
+    return True
 
 def show_camera():
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)

@@ -84,9 +84,6 @@ class TurretCamera():
 	def read_and_process_image(self, stream):
 		start_time = time.time()
 		original_img = stream.read()
-		original_img = cv2.remap(original_img, self.dedistortion_map_y, self.dedistortion_map_y, cv2.INTER_LINEAR)
-		x,y,w,h = (0, 0, 1279, 719)
-		original_img = original_img[y:y+h, x:x+w]
 
 		filter = (60,87,120,255,50,255)
 		img = filters.apply_hsv_filter(original_img, filter)
