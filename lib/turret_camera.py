@@ -2,6 +2,8 @@ import sys
 import cv2
 import traceback
 import time
+import threading
+from multiprocessing import Process
 import numpy as np
 from lib.video import StreamFactory, WebcamVideoStream, FPS
 from lib import filters
@@ -12,6 +14,7 @@ class TurretCamera():
 
 	def __init__(self, robot):
 		self.robot = robot
+		self.process = None
 		self.camera_height = robot.settings["robot"]["turret_camera_height"]
 		self.camera_vertical_pitch = robot.settings["robot"]["turret_camera_vertical_pitch"]
 		self.camera_fov_degrees_x = robot.settings["cameras"]["turret"]["fov_degrees_x"]
@@ -25,12 +28,18 @@ class TurretCamera():
 		self.output_height = robot.settings["cameras"]["turret"]["output_height"]
 		self.output_fps = robot.settings["cameras"]["turret"]["output_fps"]
 		self.interactive = self.robot.interactive_mode
+		self.key = "TURRET"
+		self.ndx = 0
 		if self.interactive:
 			print("INTERACTIVE MODE!!!!!")
 		else:
 			print("RUNNING IN HEADLESS MODE!!!!!")
 
-	def run(self):
+	def run_threaded(self):
+		self.process = Process(target=self.run, args=(self.robot.live_camera_ndx,))
+		self.process.start()
+
+	def run(self, live_camera):
 		output_stream = StreamFactory.output_stream(self)
 		print("starting the stream...")
 		input_stream = StreamFactory.get_stream(self).start()
@@ -43,7 +52,8 @@ class TurretCamera():
 				fps.start()
 			while self.keep_running():
 				frame = self.read_and_process_image(input_stream)
-				output_stream.write(frame)
+				if live_camera.value == self.ndx:
+					output_stream.write(frame)
 				if self.interactive:
 					cv2.imshow("CSI Camera", frame)
 					# Check for keyboard interaction

@@ -9,6 +9,10 @@ class StreamFactory:
 			gstream = cls.gstreamer_pipeline(flip_method=0, width=camera.width, height=camera.height, framerate=camera.fps)
 			print("Input Stream: {}".format(gstream))
 			return WebcamVideoStream(src=gstream)
+		
+		@classmethod
+		def get_streaming_stream(cls, camera):
+			return WebcamVideoStream(src=camera.device_name, cap=cv2.CAP_V4L2, width=camera.width, height=camera.height)
 
 		@classmethod
 		def output_stream(cls, camera):
@@ -16,9 +20,10 @@ class StreamFactory:
 			host = camera.robot.udp_outbound_video_host
 			port = camera.robot.udp_outbound_video_port
 			return cv2.VideoWriter('appsrc ! videoconvert ! '
-											'x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! '
-											'rtph264pay config-interval=1 pt=96 ! '
-											'udpsink host={} port={}'.format(host, port),
+											'omxh264enc control-rate=2 bitrate=1500000 ! '
+											'video/x-h264, stream-format=byte-stream ! '
+											'rtph264pay mtu=1400 ! '
+											'udpsink host={} port={}'.format(host,port),
 											0, framerate, (camera.output_width, camera.output_height))
 		
 		@classmethod
@@ -47,12 +52,42 @@ class StreamFactory:
 						)
 				)
 
+		@classmethod
+		def v4l2_gstreamer_pipeline(cls,
+				width=640,
+				height=480,
+				framerate=30,
+				flip_method=0,
+		):
+				return (
+						"nvarguscamerasrc wbmode=0 ee-mode=0 aeantibanding=0 aelock=true exposuretimerange=\"5000000 5000000\" ! "
+						"video/x-raw(memory:NVMM), "
+						"width=(int)%d, height=(int)%d, "
+						"format=(string)NV12, framerate=(fraction)%d/1 ! "
+						"nvvidconv flip-method=%d ! "
+						"video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
+						"videoconvert ! "
+						"video/x-raw, format=(string)BGR ! appsink"
+						% (
+								width,
+								height,
+								framerate,
+								flip_method,
+								width,
+								height
+						)
+				)
+
 class WebcamVideoStream:
-	def __init__(self, src=0):
+	def __init__(self, src=0, cap = cv2.CAP_GSTREAMER, width=0, height=0):
 		print(src)
 		# initialize the video camera stream and read the first frame
 		# from the stream
-		self.stream = cv2.VideoCapture(src, cv2.CAP_GSTREAMER)
+		self.stream = cv2.VideoCapture(src, cap)
+		if width > 0:
+			self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+			self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+
 		if self.stream.isOpened():
 			(self.grabbed, self.frame) = self.stream.read()
 
@@ -117,3 +152,5 @@ class FPS:
 	def fps(self):
 		# compute the (approximate) frames per second
 		return self._numFrames / self.elapsed()
+
+

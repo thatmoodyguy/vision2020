@@ -1,13 +1,21 @@
 import socket
+import traceback
 
 class UdpSender:
     def __init__(self, ip_address, ip_port):
         self.host = ip_address
         self.port = ip_port
+        self.reported_exception = False
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(message, (self.host, self.port))
+        try:
+            sock.sendto(message, (self.host, self.port))
+        except:
+            if self.reported_exception == False:
+                print("ALERT:  Cannot send to UDP destination {}".format(self.host))
+                print(traceback.format_exc())
+                #self.reported_exception = True
 
 class UdpCommandListener:
     def __init__(self, host, port, command_processor):

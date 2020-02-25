@@ -28,7 +28,7 @@ class Comms():
 		end_time = time.time()
 		latency = end_time - start_time
 		msg = "{} {} time={} latency={}".format(subject, message, time.time(), latency)
-		print("--> UDP: {}".format(msg))
+		#print("--> {}:{} UDP: {}".format(self.robot.udp_outbound_data_host, self.robot.udp_outbound_data_port, msg))
 		self.send_udp_message_to_robot(msg)
 
 	def init_udp_thread(self):
@@ -51,10 +51,15 @@ class Comms():
 			return "OK"
 		cmd = cmds.pop(0)
 		print("UDP received command: {}".format(cmd))
-		if cmd == "FRONT" and not self.front_camera is None:
-			self.live_camera = self.front_camera
-		elif cmd == "REAR" and not self.rear_camera is None:
-			self.live_camera = self.rear_camera
+		if cmd == "TURRET" and not self.robot.turret_camera is None:
+			self.robot.set_live_camera("TURRET")
+		if cmd == "FRONT" and not self.robot.front_camera is None:
+			print("switching camera to front")
+			self.robot.set_live_camera("FRONT")
+		elif cmd == "REAR" and not self.robot.rear_camera is None:
+			self.robot.set_live_camera("REAR")
 		elif cmd == "SNAPSHOT":
 			self.take_snapshot_now = True
+		else:
+			print("No action taken")
 		return "OK"
