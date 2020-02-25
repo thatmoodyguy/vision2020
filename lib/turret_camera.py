@@ -20,7 +20,7 @@ class TurretCamera():
 		self.camera_fov_degrees_x = robot.settings["cameras"]["turret"]["fov_degrees_x"]
 		self.camera_fov_degrees_y = robot.settings["cameras"]["turret"]["fov_degrees_y"]
 		self.flip_camera_mode = 0
-		self.comms = self.robot.comms
+		self.comms = None
 		self.width = robot.settings["cameras"]["turret"]["input_width"]
 		self.height = robot.settings["cameras"]["turret"]["input_height"]
 		self.fps = robot.settings["cameras"]["turret"]["input_fps"]
@@ -40,6 +40,7 @@ class TurretCamera():
 		self.process.start()
 
 	def run(self, live_camera):
+		self.comms = Comms(self.robot)
 		output_stream = StreamFactory.output_stream(self)
 		print("starting the stream...")
 		input_stream = StreamFactory.get_stream(self).start()

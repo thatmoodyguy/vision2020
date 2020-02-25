@@ -35,10 +35,9 @@ class Target():
             self.base_range = self.calc_base_range(self.bearing_y)
 
             cv2.circle(self.annotated_image, self.target_coordinates, 6, (255,255,0), 3)
-            y = int(self.image_height / 2)
-            cv2.line(self.annotated_image, (0,y), (self.image_width,y), (255,255,255), 2)
-
-            #TODO:  annotate the image with target markings!
+            x = int(self.image_width / 2)
+            cv2.line(self.annotated_image, (x,0), (x, self.image_height), (255,255,255), 2)
+            cv2.putText(self.annotated_image, "TURRET VIEW", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
         
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -78,7 +77,9 @@ class Target():
     def calc_goal_slope(self, points):
         dx = points[1][0] - points[0][0]
         dy = points[1][1] - points[0][1]
-        return (dy / dx)
+        if dx != 0:
+            return (dy / dx)
+        return 0
 
     def distance_between(self, point1, point2):
         dx = abs(point1[0] - point2[0])

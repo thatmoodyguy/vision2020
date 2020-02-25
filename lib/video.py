@@ -41,7 +41,7 @@ class StreamFactory:
 						"nvvidconv flip-method=%d ! "
 						"video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
 						"videoconvert ! "
-						"video/x-raw, format=(string)BGR ! appsink"
+						"video/x-raw, format=(string)BGR ! appsink drop=true max-buffers=1"
 						% (
 								width,
 								height,
@@ -57,22 +57,18 @@ class StreamFactory:
 				width=640,
 				height=480,
 				framerate=30,
-				flip_method=0,
+				device_name="/dev/video1",
 		):
 				return (
-						"nvarguscamerasrc wbmode=0 ee-mode=0 aeantibanding=0 aelock=true exposuretimerange=\"5000000 5000000\" ! "
-						"video/x-raw(memory:NVMM), "
-						"width=(int)%d, height=(int)%d, "
-						"format=(string)NV12, framerate=(fraction)%d/1 ! "
-						"nvvidconv flip-method=%d ! "
-						"video/x-raw, width=(int)%d, height=(int)%d, format=(string)BGRx ! "
+						("v4l2src device={} ! "
+						"'video/x-raw, width=(int)%d, height=(int)%d, framerate=(fraction)%d/1, format=(string)I420' ! "
 						"videoconvert ! "
-						"video/x-raw, format=(string)BGR ! appsink"
-						% (
+						"appsink maxbuffers=1 drop=true"
+						).format(
+								device_name, 
 								width,
 								height,
 								framerate,
-								flip_method,
 								width,
 								height
 						)
@@ -85,6 +81,7 @@ class WebcamVideoStream:
 		# from the stream
 		self.stream = cv2.VideoCapture(src, cap)
 		if width > 0:
+			#self.stream.set(cv2.CAP_PROP_FOURCC, cv2.FOURCC('M', 'J', 'P', 'G'))
 			self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 			self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
