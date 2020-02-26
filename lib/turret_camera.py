@@ -43,7 +43,7 @@ class TurretCamera():
 		self.comms = Comms(self.robot)
 		output_stream = StreamFactory.output_stream(self)
 		print("starting the stream...")
-		input_stream = StreamFactory.get_stream(self).start()
+		input_stream = StreamFactory.get_stream(self, 6).start()
 		print('stream started')
 		fps = FPS()
 		try:

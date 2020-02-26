@@ -5,8 +5,8 @@ import time
 
 class StreamFactory:
 		@classmethod
-		def get_stream(cls, camera, flip_method=0):
-			gstream = cls.gstreamer_pipeline(flip_method=0, width=camera.width, height=camera.height, framerate=camera.fps)
+		def get_stream(cls, camera, flip_method):
+			gstream = cls.gstreamer_pipeline(flip_method=flip_method, width=camera.width, height=camera.height, framerate=camera.fps)
 			print("Input Stream: {}".format(gstream))
 			return WebcamVideoStream(src=gstream)
 		
