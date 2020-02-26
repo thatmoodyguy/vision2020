@@ -35,9 +35,9 @@ class Target():
             self.base_range = self.calc_base_range(self.bearing_y)
 
             cv2.circle(self.annotated_image, self.target_coordinates, 6, (255,255,0), 3)
-            x = int(self.image_width / 2)
-            cv2.line(self.annotated_image, (x,0), (x, self.image_height), (255,255,255), 2)
-            cv2.putText(self.annotated_image, "TURRET VIEW", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
+        x = int(self.image_width / 2)
+        cv2.line(self.annotated_image, (x,0), (x, self.image_height), (255,255,255), 2)
+        cv2.putText(self.annotated_image, "TURRET VIEW", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
         
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
