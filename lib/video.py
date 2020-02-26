@@ -12,8 +12,8 @@ class StreamFactory:
 		
 		@classmethod
 		def get_streaming_stream(cls, camera):
-			gst = "v4l2src device={} ! 'video/x-raw,width=(int){}, height=(int){}, framerate=(fraction){}/1' ! videoconvert ! 'video/x-raw, format=(string)BGR' ! appsink drop=true max-buffers=1".format(camera.device_name, camera.width, camera.height, camera.fps)
-			return WebcamVideoStream(src=gst)
+			gst = "v4l2src device={} ! 'video/x-raw,width=(int){}, height=(int){}, framerate=(fraction){}/1' ! videoconvert ! 'video/x-raw, format=(string)BGR' ! appsink drop=true max-buffers=1".format(camera.device_name, cameara.width, camera.height, camera.fps)
+                    return WebcamVideoStream(src=gst)
 
 		@classmethod
 		def output_stream(cls, camera):
