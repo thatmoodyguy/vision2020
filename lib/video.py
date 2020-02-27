@@ -7,11 +7,14 @@ class StreamFactory:
 		@classmethod
 		def get_stream(cls, camera, flip_method):
 			gstream = cls.gstreamer_pipeline(flip_method=flip_method, width=camera.width, height=camera.height, framerate=camera.fps)
-			print("Input Stream: {}".format(gstream))
+			print("Turret Input Stream: {}".format(gstream))
 			return WebcamVideoStream(src=gstream)
 		
 		@classmethod
 		def get_streaming_stream(cls, camera):
+			#gstream = cls.v4l2_gstreamer_pipeline(device_name=camera.device_name, width=camera.width, height=camera.height, framerate=camera.fps)
+			#print("{} Input Stream: {}".format(camera.device_name, gstream))
+			#return WebcamVideoStream(src=gstream)
 			return WebcamVideoStream(src=camera.device_name, cap=cv2.CAP_V4L2, width=camera.width, height=camera.height)
 
 		@classmethod
@@ -61,16 +64,14 @@ class StreamFactory:
 		):
 				return (
 						("v4l2src device={} ! "
-						"'video/x-raw, width=(int)%d, height=(int)%d, framerate=(fraction)%d/1, format=(string)I420' ! "
-						"videoconvert ! "
-						"appsink maxbuffers=1 drop=true"
+						"video/x-raw, width={}, height={}, framerate={}/1 ! "
+						"videoconvert ! video/x-raw, format=BGR ! videoconvert ! "
+						"appsink max-buffers=1 drop=true"
 						).format(
 								device_name, 
 								width,
 								height,
-								framerate,
-								width,
-								height
+								framerate
 						)
 				)
 
@@ -102,6 +103,7 @@ class WebcamVideoStream:
 			self.stream.release()
 
 	def update(self):
+		self.frame = None
 		# keep looping infinitely until the thread is stopped
 		while True:
 			# if the thread indicator variable is set, stop the thread

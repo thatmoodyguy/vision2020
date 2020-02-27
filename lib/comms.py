@@ -51,11 +51,16 @@ class Comms():
 			return "OK"
 		cmd = cmds.pop(0)
 		print("UDP received command: {}".format(cmd))
-		if cmd == "TURRET" and not self.robot.turret_camera is None:
-			self.robot.set_live_camera("TURRET")
-		if cmd == "FRONT" and not self.robot.front_camera is None:
-			print("switching camera to front")
-			self.robot.set_live_camera("FRONT")
+		if cmd == "TURRET":
+			if not self.robot.turret_camera is None:
+				self.robot.set_live_camera("TURRET")
+			else:
+				print("ALERT: No turret camera")
+		elif cmd == "FRONT":
+			if not self.robot.front_camera is None:
+				self.robot.set_live_camera("FRONT")
+			else:
+				print("ALERT: No front camera")
 		elif cmd == "REAR" and not self.robot.rear_camera is None:
 			self.robot.set_live_camera("REAR")
 		elif cmd == "SNAPSHOT":

@@ -5,10 +5,11 @@ def contour_sort(e):
     return cv2.contourArea(e)
 
 class Target():
-    def __init__(self, robot, image, original_image):
+    def __init__(self, robot, image, original_image, camera):
         self.image = image
         self.original_image = original_image
         self.annotated_image = original_image
+        self.camera = camera
         self.acquired = False
         self.contour = None
         self.bearing_x = 0.0
@@ -28,17 +29,39 @@ class Target():
             self.acquired = True
             self.contour = contours[0]
             top_points = self.calc_goal_top_points(self.contour)
-            self.target_coordinates = self.calc_goal_center(top_points)
+            self.target_coordinates = self.destutter_coords(self.calc_goal_center(top_points))
             self.bearing_x = self.calc_bearing_x()
             self.bearing_y = self.calc_bearing_y()
             self.goal_slope = self.calc_goal_slope(top_points)
             self.base_range = self.calc_base_range(self.bearing_y)
 
             cv2.circle(self.annotated_image, self.target_coordinates, 6, (255,255,0), 3)
+            # draw goal line with color based on proximity to bearing
+            if self.bearing_x > -2.0 and self.bearing_x < 2.0:
+                line_color = (0,0,255)
+            else:
+                line_color = (255,255,0)
+            cv2.line(self.annotated_image, (self.target_coordinates[0],0), (self.target_coordinates[0],self.image_height), line_color, 2)
+        # draw centerline
         x = int(self.image_width / 2)
         cv2.line(self.annotated_image, (x,0), (x, self.image_height), (255,255,255), 2)
         cv2.putText(self.annotated_image, "TURRET VIEW", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
         
+    def destutter_coords(self, new_coords):
+        while len(self.camera.last_coords) > 6:
+            self.camera.last_coords.pop()
+        self.camera.last_coords.insert(0, "{}:{}".format(new_coords[0], new_coords[1]))
+        sums = {}
+        for coords in self.camera.last_coords:
+            if sums.get(coords) is None:
+                sums[coords] = 1
+            else:
+                sums[coords] = sums[coords] + 1
+                if sums[coords] >= 4:
+                    spl = coords.split(":")
+                    return (int(spl[0]), int(spl[1]))
+        return new_coords
+
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         targets = []

@@ -30,6 +30,7 @@ class TurretCamera():
 		self.interactive = self.robot.interactive_mode
 		self.key = "TURRET"
 		self.ndx = 0
+		self.last_coords = []
 		if self.interactive:
 			print("INTERACTIVE MODE!!!!!")
 		else:
@@ -43,7 +44,7 @@ class TurretCamera():
 		self.comms = Comms(self.robot)
 		output_stream = StreamFactory.output_stream(self)
 		print("starting the stream...")
-		input_stream = StreamFactory.get_stream(self, 6).start()
+		input_stream = StreamFactory.get_stream(self, 2).start()
 		print('stream started')
 		fps = FPS()
 		try:
@@ -53,6 +54,8 @@ class TurretCamera():
 				fps.start()
 			while self.keep_running():
 				frame = self.read_and_process_image(input_stream)
+				if frame is None:
+					continue
 				if live_camera.value == self.ndx:
 					output_stream.write(frame)
 				if self.interactive:
@@ -84,13 +87,15 @@ class TurretCamera():
 	def read_and_process_image(self, stream):
 		start_time = time.time()
 		original_img = stream.read()
-
+		if original_img is None:
+			return None;
+		
 		filter = (60,87,120,255,50,255)
 		img = filters.apply_hsv_filter(original_img, filter)
 		img = filters.erode(img, 1)
 		img = filters.dilate(img, 1)
 
-		target = Target(self.robot, img, original_img)
+		target = Target(self.robot, img, original_img, self)
 		target.acquire_target()
 		if target.acquired == False:
 			self.comms.send_no_target_message(start_time)
