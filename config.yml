@@ -1,8 +1,8 @@
 robot:
     udp_inbound_command_port: 5800
-    udp_outbound_host: "10.45.13.5"
-    udp_outbound_port: 8888
-    udp_outbound_video_host: "10.45.13.5"
+    udp_outbound_host: "10.45.13.2"
+    udp_outbound_port: 5801
+    udp_outbound_video_host: "10.45.13.185"
     udp_outbound_video_port: 5802
     turret_camera_height: 28.5
     turret_camera_vertical_pitch: 25.0

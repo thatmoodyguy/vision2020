@@ -40,6 +40,7 @@ class Robot():
 			ndx = 2
 		else:
 			return False
+		print("setting live camera index to {}".format(ndx))
 		self.live_camera_ndx.value = ndx
 
 	def load_settings(self):

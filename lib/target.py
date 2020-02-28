@@ -38,9 +38,9 @@ class Target():
             cv2.circle(self.annotated_image, self.target_coordinates, 6, (255,255,0), 3)
             # draw goal line with color based on proximity to bearing
             if self.bearing_x > -2.0 and self.bearing_x < 2.0:
-                line_color = (0,0,255)
+                line_color = (0,255,0)
             else:
-                line_color = (255,255,0)
+                line_color = (0,255,255)
             cv2.line(self.annotated_image, (self.target_coordinates[0],0), (self.target_coordinates[0],self.image_height), line_color, 2)
         # draw centerline
         x = int(self.image_width / 2)
