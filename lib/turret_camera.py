@@ -31,6 +31,7 @@ class TurretCamera():
 		self.key = "TURRET"
 		self.ndx = 0
 		self.last_coords = []
+		self.last_target_at = 0
 		if self.interactive:
 			print("INTERACTIVE MODE!!!!!")
 		else:

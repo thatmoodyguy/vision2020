@@ -1,5 +1,7 @@
 import cv2
 import math
+import statistics
+import time
 
 def contour_sort(e):
     return cv2.contourArea(e)
@@ -48,19 +50,17 @@ class Target():
         cv2.putText(self.annotated_image, "TURRET VIEW", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
         
     def destutter_coords(self, new_coords):
+        if time.time() - self.camera.last_target_at > 2:
+            self.camera.last_coords.clear()
+        self.camera.last_target_at = time.time()
+        while len(self.camera.last_coords) < 6:
+            #this initializes things
+            self.camera.last_coords.insert(0, new_coords)
         while len(self.camera.last_coords) > 6:
             self.camera.last_coords.pop()
-        self.camera.last_coords.insert(0, "{}:{}".format(new_coords[0], new_coords[1]))
-        sums = {}
-        for coords in self.camera.last_coords:
-            if sums.get(coords) is None:
-                sums[coords] = 1
-            else:
-                sums[coords] = sums[coords] + 1
-                if sums[coords] >= 4:
-                    spl = coords.split(":")
-                    return (int(spl[0]), int(spl[1]))
-        return new_coords
+        self.camera.last_coords.insert(0, new_coords)
+        sorted_list = sorted(self.camera.last_coords, key: lambda x: x[0])
+        return sorted_list(3) #the median coords
 
     def find_potential_targets(self, img):
         contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
